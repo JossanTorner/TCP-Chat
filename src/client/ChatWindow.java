@@ -39,12 +39,11 @@ public class ChatWindow extends JFrame {
         this.add(chatScroll, BorderLayout.CENTER);
         this.add(messageField, BorderLayout.SOUTH);
 
+        closeChat();
         this.setDefaultCloseOperation(ChatWindow.EXIT_ON_CLOSE);
         this.setSize(300, 400);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
-
-        closeChat();
     }
 
     public void setUpChat(){
@@ -52,7 +51,7 @@ public class ChatWindow extends JFrame {
             try{
                 ConnectClient connection = new ConnectClient(serverIP, PORT);
                 socket = connection.getSocket();
-                chatClient = new ChatClient(messageField, chatArea, socket);
+                chatClient = new ChatClient(messageField, chatArea, socket, "Josefin");
 
                 messageField.setEnabled(true);
                 messageField.addActionListener(chatClient);

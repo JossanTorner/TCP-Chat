@@ -8,21 +8,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
+
 
 public class ChatClient implements ActionListener{
 
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private String userName;
     JTextField textField;
     JTextArea textArea;
 
 
-    public ChatClient(JTextField textField, JTextArea textArea, Socket socket) {
+    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName) {
         this.textField = textField;
         this.textArea = textArea;
         this.socket = socket;
+        this.userName = userName;
         try{
             startConnection();
             startListeningForMessages();
@@ -48,12 +50,8 @@ public class ChatClient implements ActionListener{
     }
     
     public void sendMessage(String message) throws IOException {
-        out.println(message);
+        out.println(userName + ": " + message);
     }
-
-//    public void recieveMessage() throws IOException {
-//        textArea.append(in.readLine() + "\n");
-//    }
 
     public void startListeningForMessages() {
         new Thread(() -> {
