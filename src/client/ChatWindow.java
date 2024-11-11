@@ -49,8 +49,7 @@ public class ChatWindow extends JFrame {
     public void setUpChat(){
         connectButton.addActionListener(e -> {
             try{
-                ConnectClient connection = new ConnectClient(serverIP, PORT);
-                socket = connection.getSocket();
+                socket = new Socket(serverIP, PORT);
                 chatClient = new ChatClient(messageField, chatArea, socket, "Josefin");
 
                 messageField.setEnabled(true);
