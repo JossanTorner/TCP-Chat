@@ -1,16 +1,17 @@
 package server;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import States.RequestHandlingStates;
+import client.Request;
+
+import java.io.*;
 import java.net.Socket;
 
 public class ClientConnection extends Thread {
 
-    Socket socket;
+    private Socket socket;
     private Server server;
-    PrintWriter out;
-    BufferedReader in;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private RequestHandlingStates state;
 
     public ClientConnection(Socket socket, Server server) {
         this.socket = socket;
@@ -18,29 +19,34 @@ public class ClientConnection extends Thread {
     }
 
     public void run(){
-
-        try{
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            String clientMessage;
-            while((clientMessage = in.readLine()) != null){
-                out.println(clientMessage);
-                server.brodcast(clientMessage, this);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            closeConnection();
-            server.removeClient(this);
-        }
-
+        initializeConnection();
     }
 
-    public void sendMessage(String message) {
-       out.println(message);
+    public void initializeConnection(){
+        try{
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+
+            while(in.readObject() instanceof Request request){
+
+                switch (request.getRequestType()){
+                    case CONNECT -> {}
+                    case MESSAGE -> {}
+                    case DISCONNECT -> {}
+
+                }
+
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            server.removeClient(this);
+        }
+    }
+
+    public void sendMessage(String message) throws IOException {
+       out.writeObject(new Response(message, eResponseType.BROADCAST));
     }
 
     private void closeConnection() {
@@ -51,5 +57,21 @@ public class ClientConnection extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Server getServer(){
+        return server;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public ObjectOutputStream getOut() {
+        return out;
+    }
+
+    public ObjectInputStream getIn() {
+        return in;
     }
 }

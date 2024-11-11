@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 
-public class ChatClient implements ActionListener{
+public class ChatClient implements ActionListener {
 
     private Socket socket;
     private PrintWriter out;

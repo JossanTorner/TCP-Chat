@@ -26,17 +26,20 @@ public class Server {
         }
     }
 
-    public void brodcast(String message, ClientConnection excludeClient){
+    public void broadcast(Object message) throws IOException {
         for(ClientConnection client : clients) {
-            if(client != excludeClient){
-                client.sendMessage(message);
-            }
+            client.sendMessage(message);
         }
     }
+
     public synchronized void removeClient(ClientConnection client) {
         clients.remove(client);
     }
 
+
+    public List<ClientConnection> getClients() {
+        return clients;
+    }
 
     public static void main(String[] args) throws UnknownHostException {
          Server listener = new Server();
