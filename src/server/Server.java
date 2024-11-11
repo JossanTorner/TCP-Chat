@@ -18,7 +18,6 @@ public class Server {
                 Socket socket = serverSocket.accept();
                 ClientConnection clientConnection = new ClientConnection(socket, this);
                 clientConnection.start();
-                clients.add(clientConnection);
             }
         }
         catch (IOException e) {
@@ -26,7 +25,7 @@ public class Server {
         }
     }
 
-    public void broadcast(Object message) throws IOException {
+    public void broadcast(String message) throws IOException {
         for(ClientConnection client : clients) {
             client.sendMessage(message);
         }

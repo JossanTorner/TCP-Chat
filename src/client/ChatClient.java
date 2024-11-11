@@ -1,21 +1,23 @@
 package client;
 
+
+import server.Response;
+import server.eResponseType;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 
-public class ChatClient implements ActionListener {
+public class ChatClient implements ActionListener{
 
     private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
-    private String userName;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private String username;
+    Status status;
     JTextField textField;
     JTextArea textArea;
 
@@ -24,7 +26,8 @@ public class ChatClient implements ActionListener {
         this.textField = textField;
         this.textArea = textArea;
         this.socket = socket;
-        this.userName = userName;
+        this.username = userName;
+        status = Status.OFFLINE;
         try{
             startConnection();
             startListeningForMessages();
@@ -34,9 +37,13 @@ public class ChatClient implements ActionListener {
         }
     }
 
+    public void setUserName(String userName) {
+        this.username = userName;
+    }
+
     public void startConnection() throws IOException {
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new ObjectOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
     }
 
     public void closeConnection() {
@@ -49,18 +56,33 @@ public class ChatClient implements ActionListener {
         }
     }
     
-    public void sendMessage(String message) throws IOException {
-        out.println(userName + ": " + message);
+    public void sendMessage(Object request) throws IOException {
+        out.writeObject(request);
     }
 
     public void startListeningForMessages() {
         new Thread(() -> {
             try {
-                String serverMessage;
-                while ((serverMessage = in.readLine()) != null) {
-                    textArea.append(serverMessage + "\n");
+                Object serverMessage = in.readObject();
+                if (serverMessage instanceof Response response) {
+                    switch(response.getResponseType()){
+                        case CONNECTION_ESTABLISHED -> {
+                            status = Status.ONLINE;
+                            String message = response.getMessage();
+                            textArea.append(message + "\n");
+                        }
+                        case CONNECTION_TERMINATED -> {
+                            status = Status.OFFLINE;
+                            String message = response.getMessage();
+                            textArea.append(message + "\n");
+                        }
+                        case BROADCAST -> {
+                            String message = response.getMessage();
+                            textArea.append(message + "\n");
+                        }
+                    }
                 }
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }).start();
@@ -70,10 +92,12 @@ public class ChatClient implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         try {
             String message = textField.getText();
-            sendMessage(message);
+            Request request = new Request(eRequest.MESSAGE, username, message);
+            sendMessage(request);
             textField.setText("");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
+
 }

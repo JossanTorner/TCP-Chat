@@ -1,7 +1,6 @@
 package client;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class Request implements Serializable {
 

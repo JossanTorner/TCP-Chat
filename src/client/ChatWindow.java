@@ -14,6 +14,7 @@ public class ChatWindow extends JFrame {
     JTextField messageField;
     Socket socket;
     ChatClient chatClient;
+    String username;
 
     static final int PORT = 8000;
     String serverIP = "25.16.11.103";
@@ -35,11 +36,11 @@ public class ChatWindow extends JFrame {
 
         setUpChat();
 
+        windowEvents();
         this.add(connectButton, BorderLayout.NORTH);
         this.add(chatScroll, BorderLayout.CENTER);
         this.add(messageField, BorderLayout.SOUTH);
 
-        closeChat();
         this.setDefaultCloseOperation(ChatWindow.EXIT_ON_CLOSE);
         this.setSize(300, 400);
         this.setVisible(true);
@@ -50,7 +51,7 @@ public class ChatWindow extends JFrame {
         connectButton.addActionListener(e -> {
             try{
                 socket = new Socket(serverIP, PORT);
-                chatClient = new ChatClient(messageField, chatArea, socket, "Josefin");
+                chatClient = new ChatClient(messageField, chatArea, socket, username);
 
                 messageField.setEnabled(true);
                 messageField.addActionListener(chatClient);
@@ -62,13 +63,17 @@ public class ChatWindow extends JFrame {
         });
     }
 
-    public void closeChat(){
+    public void windowEvents(){
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 if (socket != null){
                     chatClient.closeConnection();
                 }
+            }
+            @Override
+            public void windowOpened(WindowEvent e) {
+                username = JOptionPane.showInputDialog("Name: ");
             }
         });
     }

@@ -1,4 +1,7 @@
 package server;
+import States.ConnectRequestState;
+import States.DisconnectRequestState;
+import States.MessageRequestState;
 import States.RequestHandlingStates;
 import client.Request;
 
@@ -11,11 +14,18 @@ public class ClientConnection extends Thread {
     private Server server;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-    private RequestHandlingStates state;
+    RequestHandlingStates state;
+    RequestHandlingStates messageState;
+    RequestHandlingStates disconnectState;
+    RequestHandlingStates connectState;
 
     public ClientConnection(Socket socket, Server server) {
         this.socket = socket;
         this.server = server;
+        messageState = new MessageRequestState(this);
+        disconnectState = new DisconnectRequestState(this);
+        connectState = new ConnectRequestState(this);
+
     }
 
     public void run(){
@@ -30,9 +40,18 @@ public class ClientConnection extends Thread {
             while(in.readObject() instanceof Request request){
 
                 switch (request.getRequestType()){
-                    case CONNECT -> {}
-                    case MESSAGE -> {}
-                    case DISCONNECT -> {}
+                    case CONNECT -> {
+                        state = connectState;
+                        state.handleRequest(request);
+                    }
+                    case MESSAGE -> {
+                        state = messageState;
+                        state.handleRequest(request);
+                    }
+                    case DISCONNECT -> {
+                        state = disconnectState;
+                        state.handleRequest(request);
+                    }
 
                 }
 
@@ -47,16 +66,6 @@ public class ClientConnection extends Thread {
 
     public void sendMessage(String message) throws IOException {
        out.writeObject(new Response(message, eResponseType.BROADCAST));
-    }
-
-    private void closeConnection() {
-        try {
-            in.close();
-            out.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public Server getServer(){
