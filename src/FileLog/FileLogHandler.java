@@ -15,23 +15,20 @@ public class FileLogHandler {
 
 
     public void createFile() throws IOException {
-        filePath = Path.of(filePath);
-        Path filePath = Path.get(fileName)
+        Path filePath = Path.of(filename);
         if(!Files.exists(filePath)) {
             Files.createFile(filePath);
-        } else {
-            writeToFile(filePath, userInfo);
+        } else { //har noll koll hahaha jag ba varför tar inte den här metoden en fil nu då.
+            //precis vad jag kom hit för att ändra så den inte gjorde hahahahaha
+            //det här är SÅ roligt. Alltså min highlight idag hahaha jag tror vi är klara här just nu. 
+            //SÅ vad vill d göra nu här i
+            writeToFile(userInfo);
 
         }
     }
-    //hahahha nej det var jag, dör
 
     public static void writeToFile(String userInfo) {
-        //har jag fått hjärnsläpp på riktigt
-        //med gällande vad??
-        //metoderna får helt enkelt använda sig av klassens redan förbestämda fil alltid
-        //ja men det är väl inte konstigt? eller?
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             writer.write(userInfo);
             writer.newLine();
         } catch (IOException e){
@@ -42,7 +39,7 @@ public class FileLogHandler {
 
     public static List<User> readLogFile() {
         List<Object> userInfo = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
 
 
         } catch (IOException e) {
