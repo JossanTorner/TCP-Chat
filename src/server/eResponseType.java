@@ -3,5 +3,7 @@ package server;
 public enum eResponseType {
     BROADCAST,
     CONNECTION_ESTABLISHED,
-    CONNECTION_TERMINATED;
+    CONNECTION_TERMINATED,
+    //la till en till responsetyp
+    USER_STATE_CHANGED;
 }

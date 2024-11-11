@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -50,7 +51,7 @@ public class ChatWindow extends JFrame {
     public void setUpChat(){
         connectButton.addActionListener(e -> {
             try{
-                socket = new Socket(serverIP, PORT);
+                socket = new Socket(InetAddress.getLocalHost(), PORT);
                 chatClient = new ChatClient(messageField, chatArea, socket, username);
 
                 messageField.setEnabled(true);

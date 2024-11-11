@@ -34,29 +34,32 @@ public class ClientConnection extends Thread {
 
     public void initializeConnection(){
         try{
+            System.out.println("Connection established with client");
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
             while(in.readObject() instanceof Request request){
-
+                System.out.println("Taking requests of request-type");
                 switch (request.getRequestType()){
                     case CONNECT -> {
+                        System.out.println("Connect request");
                         state = connectState;
-                        state.handleRequest(request);
+                        state.handleRequest(request); //aa här eller i ConnectStateRequest i "handleRequest" för där hanteras ju allt
+                        //så när man har handlat ett request och får connect så ska det skrivas till fil, så det är den här klassen
+                        //vi behöver koppla?
                     }
                     case MESSAGE -> {
+                        System.out.println("Message request");
                         state = messageState;
                         state.handleRequest(request);
                     }
                     case DISCONNECT -> {
+                        System.out.println("Disconnect request");
                         state = disconnectState;
                         state.handleRequest(request);
                     }
-
                 }
-
             }
-
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
