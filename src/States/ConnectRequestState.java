@@ -37,8 +37,7 @@ public class ConnectRequestState implements RequestHandlingStates {
             }
         }
         if (!foundUser) {
-            //nej det tycker jag inte man ska göra! så ändra!
-            //kommer gå in i fileloghandler klassen nu och ändra så att man slipper lägga in filnamn, för det bör man inte behöva göra här va? eller?
+            //pushade upp förändringarna ifall min dator dör vilket den kommer göra snart för min laddare är intryckt i sovrummet där den minsta sover haha
             FileLogHandler.writeToFile();
         }
         connection.getServer().broadcast("Has joined: " + request.getUsername());

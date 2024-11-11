@@ -11,11 +11,12 @@ import java.util.List;
 public class FileLogHandler {
 
     private String userInfo;
-    private static String filePath = "userLog.txt";
+    private static String filename = "userLog.txt";
 
 
     public void createFile() throws IOException {
-        filePath = Path.of();
+        filePath = Path.of(filePath);
+        Path filePath = Path.get(fileName)
         if(!Files.exists(filePath)) {
             Files.createFile(filePath);
         } else {
@@ -26,7 +27,10 @@ public class FileLogHandler {
     //hahahha nej det var jag, dör
 
     public static void writeToFile(String userInfo) {
+        //har jag fått hjärnsläpp på riktigt
+        //med gällande vad??
         //metoderna får helt enkelt använda sig av klassens redan förbestämda fil alltid
+        //ja men det är väl inte konstigt? eller?
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
             writer.write(userInfo);
             writer.newLine();
