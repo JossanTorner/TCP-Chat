@@ -5,5 +5,5 @@ public enum eResponseType {
     CONNECTION_ESTABLISHED,
     CONNECTION_TERMINATED,
     //la till en till responsetyp
-    USER_STATE_CHANGED;
+    USER_STATUS_CHANGED;
 }

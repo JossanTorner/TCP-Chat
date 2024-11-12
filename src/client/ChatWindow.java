@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import java.util.List;
+
 public class ChatWindow extends JFrame {
 
     JTextArea chatArea;
@@ -23,6 +25,9 @@ public class ChatWindow extends JFrame {
     String username;
     ObjectOutputStream outputStream;
     ObjectInputStream inputStream;
+
+    JList<String> membersList;
+    DefaultListModel<String> membersModel;
 
     static final int PORT = 8000;
     String serverIP = "25.16.11.103";
@@ -42,12 +47,19 @@ public class ChatWindow extends JFrame {
         messageField = new JTextField();
         messageField.setEnabled(false);
 
+
+        membersModel = new DefaultListModel<>();
+        membersList = new JList<>(membersModel); // Use DefaultListModel for members list
+        JScrollPane membersScroll = new JScrollPane(membersList);
+        membersScroll.setPreferredSize(new Dimension(100, 0));
+
         setUpChat();
 
         windowEvents();
         this.add(connectButton, BorderLayout.NORTH);
         this.add(chatScroll, BorderLayout.CENTER);
         this.add(messageField, BorderLayout.SOUTH);
+        this.add(membersScroll, BorderLayout.EAST);
 
         this.setDefaultCloseOperation(ChatWindow.EXIT_ON_CLOSE);
         this.setSize(300, 400);
@@ -59,7 +71,7 @@ public class ChatWindow extends JFrame {
     public void setUpChat() throws IOException {
         connectButton.addActionListener(e -> {
             try{
-                socket = new Socket(InetAddress.getLocalHost(), PORT);
+                socket = new Socket(serverIP, PORT);
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
                 inputStream = new ObjectInputStream(socket.getInputStream());
 
@@ -70,7 +82,7 @@ public class ChatWindow extends JFrame {
                     chatArea.append(response.getMessage());
                 }
 
-                chatClient = new ChatClient(messageField, chatArea, socket, username, outputStream, inputStream);
+                chatClient = new ChatClient(messageField, chatArea, socket, username, outputStream, inputStream, this);
                 messageField.setEnabled(true);
                 messageField.addActionListener(chatClient);
                 connectButton.setEnabled(false);
@@ -79,6 +91,15 @@ public class ChatWindow extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
+    }
+
+    public void updateMemberList(List<User> userList) {
+        membersModel.clear();
+        for (User user : userList) {
+            membersModel.addElement(user.getUsername());
+        }
+        membersList.revalidate();
+        membersList.repaint();
     }
 
     public void windowEvents(){

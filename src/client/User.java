@@ -1,24 +1,19 @@
 package client;
 
-import server.Server;
+import java.io.Serializable;
 
-//Vet ej vad klassen ska heta, lär ju va nåt annat?
-public class User {
+public class User implements Serializable {
 
-    private String user;
+    private String username;
     private Status status;
 
-
-    //vi behöver ju koppla ihop med servern här tänker jag?
-    //hmm vad behövs från servern
-
-    public User(String user, Status status) {
-        this.user=user;
+    public User(String username, Status status) {
+        this.username= username;
 
     }
-//åh härligt
-    public String getUser() {
-        return user;
+
+    public String getUsername() {
+        return username;
     }
 
     public Status getStatus() {

@@ -38,6 +38,10 @@ public class ClientConnection extends Thread {
         }
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public void initializeConnection() throws IOException {
         try{
             System.out.println("Connection established with client");
@@ -71,6 +75,10 @@ public class ClientConnection extends Thread {
             out.close();
             in.close();
         }
+    }
+
+    public void sendObject(Object object) throws IOException {
+        out.writeObject(object);
     }
 
     public void sendMessage(String message) throws IOException {
