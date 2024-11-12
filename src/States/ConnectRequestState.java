@@ -2,6 +2,7 @@ package States;
 
 import FileLog.FileLogHandler;
 import client.Request;
+import client.Status;
 import client.User;
 import server.ClientConnection;
 import server.Response;
@@ -23,24 +24,25 @@ public class ConnectRequestState implements RequestHandlingStates {
     public void handleRequest(Request request) throws IOException {
         connection.getServer().getClients().add(connection);
         connection.getOut().writeObject(new Response("Welcome to the chat!", eResponseType.CONNECTION_ESTABLISHED));
+        connection.getServer().broadcast("Has joined: " + request.getUsername());
 
-        //steg: ett
+        connection.user = new User(request.getUsername(), Status.ONLINE);
+        connection.getServer().broadcastObjects(new Response(connection.getServer().getClients(), eResponseType.USER_STATE_CHANGED));
 
-        //vi kör här först sen får vi se om det känns fel/rätt. 110% att det komer kännas fel när logiken är klar
-        //ahaaaaa det är getname och equals med listor HAHAH
-        //hahahaha
+        /*
         List<User> currentUserList = FileLogHandler.readLogFile();
         boolean foundUser = false;
         for(User user : currentUserList){
-            if(user.getUser().equals(request.getUsername())){
+            if(user.getUsername().equals(request.getUsername())){
                 foundUser = true;
+                connection.getServer().broadcastObjects(new Response(currentUser, eResponseType.USER_STATE_CHANGED));
+                break;
             }
         }
         if (!foundUser) {
-            //pushade upp förändringarna ifall min dator dör vilket den kommer göra snart för min laddare är intryckt i sovrummet där den minsta sover haha
-            FileLogHandler.writeToFile();
+            FileLogHandler.createFile((currentUser));
         }
-        connection.getServer().broadcast("Has joined: " + request.getUsername());
+         */
 
     }
 

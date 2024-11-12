@@ -4,6 +4,7 @@ import States.DisconnectRequestState;
 import States.MessageRequestState;
 import States.RequestHandlingStates;
 import client.Request;
+import client.User;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,6 +19,7 @@ public class ClientConnection extends Thread {
     RequestHandlingStates messageState;
     RequestHandlingStates disconnectState;
     RequestHandlingStates connectState;
+    public User user;
 
     public ClientConnection(Socket socket, Server server) {
         this.socket = socket;
@@ -25,7 +27,6 @@ public class ClientConnection extends Thread {
         messageState = new MessageRequestState(this);
         disconnectState = new DisconnectRequestState(this);
         connectState = new ConnectRequestState(this);
-
     }
 
     public void run(){
@@ -44,9 +45,7 @@ public class ClientConnection extends Thread {
                     case CONNECT -> {
                         System.out.println("Connect request");
                         state = connectState;
-                        state.handleRequest(request); //aa här eller i ConnectStateRequest i "handleRequest" för där hanteras ju allt
-                        //så när man har handlat ett request och får connect så ska det skrivas till fil, så det är den här klassen
-                        //vi behöver koppla?
+                        state.handleRequest(request);
                     }
                     case MESSAGE -> {
                         System.out.println("Message request");
@@ -66,6 +65,11 @@ public class ClientConnection extends Thread {
             server.removeClient(this);
         }
     }
+
+    public void sendObject(Object object) throws IOException {
+        out.writeObject(object);
+    }
+
 
     public void sendMessage(String message) throws IOException {
        out.writeObject(new Response(message, eResponseType.BROADCAST));

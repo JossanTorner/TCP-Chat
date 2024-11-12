@@ -26,6 +26,12 @@ public class Server {
         }
     }
 
+    public void broadcastObjects(Object object) throws IOException {
+        for(ClientConnection client : clients) {
+            client.sendObject(object);
+        }
+    }
+
     public void broadcast(String message) throws IOException {
         for(ClientConnection client : clients) {
             client.sendMessage(message);

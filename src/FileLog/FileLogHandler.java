@@ -10,50 +10,79 @@ import java.util.List;
 
 public class FileLogHandler {
 
-    private String userInfo;
-    private static String filename = "userLog.txt";
+    private static User userInfo;
+    private static String filename = "UserLog.txt";
+    private static boolean online;
 
 
-    public void createFile() throws IOException {
+    public FileLogHandler(User userInfo) {
+        this.userInfo = userInfo;
+        this.online = false;
+
+    }
+
+    public static void createFile(User user) throws IOException {
         Path filePath = Path.of(filename);
         if(!Files.exists(filePath)) {
             Files.createFile(filePath);
         } else { //har noll koll hahaha jag ba varför tar inte den här metoden en fil nu då.
             //precis vad jag kom hit för att ändra så den inte gjorde hahahahaha
-            //det här är SÅ roligt. Alltså min highlight idag hahaha jag tror vi är klara här just nu. 
-            //SÅ vad vill d göra nu här i
+            //det här är SÅ roligt. Alltså min highlight idag hahaha jag tror vi är klara här just nu.
+            //SÅ vad vill d göra nu här i? xd
             writeToFile(userInfo);
 
         }
     }
 
-    public static void writeToFile(String userInfo) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write(userInfo);
-            writer.newLine();
+    public static void writeObjectToFile(User userInfo) {
+        try (FileOutputStream fileOut = new FileOutputStream("server/users.dat");
+             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+            objectOut.writeObject(userInfo);
         } catch (IOException e){
             e.printStackTrace();
         }
     }
 
+    public static void writeToFile(User userInfo) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+            writer.write(logLine());
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
-    public static List<User> readLogFile() {
-        List<Object> userInfo = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+    public static List<User> readObjectFile(){
+        List<User> userInfo = new ArrayList<>();
+        try (FileInputStream fileIn = new FileInputStream("server/users.dat");
+             ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
+            while (true) {
+                try {
+                    Object readObject = objectIn.readObject();
+                    if (readObject instanceof User user) {
+                        userInfo.add(user);
+                    }
+                } catch (EOFException e) {
+                    break;
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
 
+   /* public static List<User> readLogFile() {
+        List<User> userInfo = new ArrayList<>();
+        try (
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-        //klient som connectar till server ska loggas i fil med request Connected/disconnected?
-
-
-        //Söka efter klient med "nyckel" Connected/Disconnected? Lägga i en lista att loopa igenom och skriva ut?
-
-        //hahahaha KÖÖÖR jag behöver ändå lära mig hashmaps
-        //Hämta alla klienter från lista till hashmap med request som nyckel och på så sätt skriva ut?  (ja jag gillar fortfarande hashmap hehe)
         return userInfo;
+    }*/
+
+
+    public static String logLine(){
+        return userInfo + (online ?  "Offline " : " Online ");
     }
 }

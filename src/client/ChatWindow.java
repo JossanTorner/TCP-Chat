@@ -3,9 +3,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 
 public class ChatWindow extends JFrame {
 
@@ -16,6 +18,9 @@ public class ChatWindow extends JFrame {
     Socket socket;
     ChatClient chatClient;
     String username;
+
+    JList<String> membersList;
+    DefaultListModel<String> membersModel;
 
     static final int PORT = 8000;
     String serverIP = "25.16.11.103";
@@ -35,12 +40,18 @@ public class ChatWindow extends JFrame {
         messageField = new JTextField();
         messageField.setEnabled(false);
 
+        membersModel = new DefaultListModel<>();
+        membersList = new JList<>(membersModel); // Use DefaultListModel for members list
+        JScrollPane membersScroll = new JScrollPane(membersList);
+        membersScroll.setPreferredSize(new Dimension(100, 0));
+
         setUpChat();
 
         windowEvents();
         this.add(connectButton, BorderLayout.NORTH);
         this.add(chatScroll, BorderLayout.CENTER);
         this.add(messageField, BorderLayout.SOUTH);
+        this.add(membersScroll, BorderLayout.EAST);
 
         this.setDefaultCloseOperation(ChatWindow.EXIT_ON_CLOSE);
         this.setSize(300, 400);
@@ -48,18 +59,26 @@ public class ChatWindow extends JFrame {
         this.setLocationRelativeTo(null);
     }
 
+
+    public void updateMemberDisplay(List<User> userList) {
+        membersModel.clear();
+        for (User user : userList) {
+            membersModel.addElement(user.getUsername() + " - " + user.getStatus());
+        }
+    }
+
     public void setUpChat(){
         connectButton.addActionListener(e -> {
             try{
                 socket = new Socket(InetAddress.getLocalHost(), PORT);
-                chatClient = new ChatClient(messageField, chatArea, socket, username);
+                chatClient = new ChatClient(messageField, chatArea, socket, username, this);
 
                 messageField.setEnabled(true);
                 messageField.addActionListener(chatClient);
                 connectButton.setEnabled(false);
 
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
     }
