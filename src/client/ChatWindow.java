@@ -1,8 +1,13 @@
 package client;
+import server.Response;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -16,12 +21,14 @@ public class ChatWindow extends JFrame {
     Socket socket;
     ChatClient chatClient;
     String username;
+    ObjectOutputStream outputStream;
+    ObjectInputStream inputStream;
 
     static final int PORT = 8000;
     String serverIP = "25.16.11.103";
 
 
-    public ChatWindow() throws UnknownHostException {
+    public ChatWindow() throws IOException {
         super("Chat App");
         this.setLayout(new BorderLayout());
 
@@ -48,12 +55,22 @@ public class ChatWindow extends JFrame {
         this.setLocationRelativeTo(null);
     }
 
-    public void setUpChat(){
+
+    public void setUpChat() throws IOException {
         connectButton.addActionListener(e -> {
             try{
                 socket = new Socket(InetAddress.getLocalHost(), PORT);
-                chatClient = new ChatClient(messageField, chatArea, socket, username);
+                outputStream = new ObjectOutputStream(socket.getOutputStream());
+                inputStream = new ObjectInputStream(socket.getInputStream());
 
+                Request connectRequest = new Request(eRequest.CONNECT, username, "");
+                outputStream.writeObject(connectRequest);
+                Object received = inputStream.readObject();
+                if(received instanceof Response response){
+                    chatArea.append(response.getMessage());
+                }
+
+                chatClient = new ChatClient(messageField, chatArea, socket, username, outputStream, inputStream);
                 messageField.setEnabled(true);
                 messageField.addActionListener(chatClient);
                 connectButton.setEnabled(false);
@@ -79,7 +96,7 @@ public class ChatWindow extends JFrame {
         });
     }
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws IOException {
         ChatWindow chatWindow = new ChatWindow();
     }
 }

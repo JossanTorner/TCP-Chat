@@ -22,14 +22,15 @@ public class ChatClient implements ActionListener{
     JTextArea textArea;
 
 
-    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName) throws IOException {
+    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName, ObjectOutputStream out, ObjectInputStream in) throws IOException {
+        this.out = out;
+        this.in = in;
         this.textField = textField;
         this.textArea = textArea;
         this.socket = socket;
         this.username = userName;
         status = Status.OFFLINE;
         try{
-            startConnection();
             startListeningForMessages();
         }
         catch (IOException e) {
@@ -68,16 +69,19 @@ public class ChatClient implements ActionListener{
                     if (serverMessage instanceof Response response) {
                         switch(response.getResponseType()){
                             case CONNECTION_ESTABLISHED -> {
+                                System.out.println("Got connection response");
                                 status = Status.ONLINE;
                                 String message = response.getMessage();
                                 textArea.append(message + "\n");
                             }
                             case CONNECTION_TERMINATED -> {
+                                System.out.println("Got offline response");
                                 status = Status.OFFLINE;
                                 String message = response.getMessage();
                                 textArea.append(message + "\n");
                             }
                             case BROADCAST -> {
+                                System.out.println("Got broadcasted message");
                                 String message = response.getMessage();
                                 textArea.append(message + "\n");
                             }
