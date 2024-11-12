@@ -22,7 +22,7 @@ public class ChatClient implements ActionListener{
     JTextArea textArea;
 
 
-    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName) {
+    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName) throws IOException {
         this.textField = textField;
         this.textArea = textArea;
         this.socket = socket;
@@ -60,25 +60,27 @@ public class ChatClient implements ActionListener{
         out.writeObject(request);
     }
 
-    public void startListeningForMessages() {
+    public void startListeningForMessages() throws IOException {
         new Thread(() -> {
             try {
-                Object serverMessage = in.readObject();
-                if (serverMessage instanceof Response response) {
-                    switch(response.getResponseType()){
-                        case CONNECTION_ESTABLISHED -> {
-                            status = Status.ONLINE;
-                            String message = response.getMessage();
-                            textArea.append(message + "\n");
-                        }
-                        case CONNECTION_TERMINATED -> {
-                            status = Status.OFFLINE;
-                            String message = response.getMessage();
-                            textArea.append(message + "\n");
-                        }
-                        case BROADCAST -> {
-                            String message = response.getMessage();
-                            textArea.append(message + "\n");
+                while(true){
+                    Object serverMessage = in.readObject();
+                    if (serverMessage instanceof Response response) {
+                        switch(response.getResponseType()){
+                            case CONNECTION_ESTABLISHED -> {
+                                status = Status.ONLINE;
+                                String message = response.getMessage();
+                                textArea.append(message + "\n");
+                            }
+                            case CONNECTION_TERMINATED -> {
+                                status = Status.OFFLINE;
+                                String message = response.getMessage();
+                                textArea.append(message + "\n");
+                            }
+                            case BROADCAST -> {
+                                String message = response.getMessage();
+                                textArea.append(message + "\n");
+                            }
                         }
                     }
                 }

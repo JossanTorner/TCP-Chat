@@ -10,8 +10,7 @@ public class Server {
 
     static final int PORT = 8000;
     private List<ClientConnection> clients = new ArrayList<>();
-    //ahaaa men behövs den? tänker, servern kommer ju kanske va den som skickar med user-objekt i en disconnect/connect request, men hmmm svårt aa det e saNT
-//eller blir det Client Connetion? tänker för när man kopplar upp och får connection ska man hoppa till att skriva till fil? Beroende på resopone och state?
+
     public Server(){
         try(ServerSocket serverSocket = new ServerSocket(PORT);){
 

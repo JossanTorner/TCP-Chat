@@ -4,6 +4,7 @@ import States.DisconnectRequestState;
 import States.MessageRequestState;
 import States.RequestHandlingStates;
 import client.Request;
+import client.User;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,6 +19,7 @@ public class ClientConnection extends Thread {
     RequestHandlingStates messageState;
     RequestHandlingStates disconnectState;
     RequestHandlingStates connectState;
+    User user;
 
     public ClientConnection(Socket socket, Server server) {
         this.socket = socket;
@@ -29,14 +31,18 @@ public class ClientConnection extends Thread {
     }
 
     public void run(){
-        initializeConnection();
+        try {
+            initializeConnection();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void initializeConnection(){
+    public void initializeConnection() throws IOException {
         try{
             System.out.println("Connection established with client");
-            out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
 
             while(in.readObject() instanceof Request request){
                 System.out.println("Taking requests of request-type");
@@ -44,9 +50,7 @@ public class ClientConnection extends Thread {
                     case CONNECT -> {
                         System.out.println("Connect request");
                         state = connectState;
-                        state.handleRequest(request); //aa här eller i ConnectStateRequest i "handleRequest" för där hanteras ju allt
-                        //så när man har handlat ett request och får connect så ska det skrivas till fil, så det är den här klassen
-                        //vi behöver koppla?
+                        state.handleRequest(request);
                     }
                     case MESSAGE -> {
                         System.out.println("Message request");
@@ -64,6 +68,8 @@ public class ClientConnection extends Thread {
             throw new RuntimeException(e);
         } finally {
             server.removeClient(this);
+            out.close();
+            in.close();
         }
     }
 

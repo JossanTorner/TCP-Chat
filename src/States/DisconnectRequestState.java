@@ -21,6 +21,7 @@ public class DisconnectRequestState implements RequestHandlingStates{
         connection.getServer().removeClient(connection);
         connection.getOut().writeObject(new Response("You have been disconnected ", eResponseType.CONNECTION_TERMINATED));
         connection.getServer().broadcast(request.getUsername() + " has left the server </3");
+        System.out.println("Sent offline response");
         connection.getOut().close();
         connection.getIn().close();
         connection.getSocket().close();
