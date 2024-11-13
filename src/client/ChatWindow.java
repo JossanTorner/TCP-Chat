@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -26,7 +29,7 @@ public class ChatWindow extends JFrame {
     String serverIP = "25.16.11.103";
 
 
-    public ChatWindow() throws UnknownHostException {
+    public ChatWindow() throws IOException {
         super("Chat App");
         this.setLayout(new BorderLayout());
 
@@ -67,11 +70,23 @@ public class ChatWindow extends JFrame {
         }
     }
 
-    public void setUpChat(){
+    public void setUpChat() throws IOException {
         connectButton.addActionListener(e -> {
+//så vad står det i servern nu?
+            //haha vi tappar mer och mer greppet om vår app.
+            //börjar förstå det här med att rita upp innan man börjar bygga HAAHA
+            //JA HAHA same
             try{
+
                 socket = new Socket(InetAddress.getLocalHost(), PORT);
-                chatClient = new ChatClient(messageField, chatArea, socket, username, this);
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+
+                Request connectRequest = new Request(eRequest.CONNECT, username, "");
+                out.writeObject(connectRequest);
+
+                chatClient = new ChatClient(messageField, chatArea, socket, username, out, in, this);
 
                 messageField.setEnabled(true);
                 messageField.addActionListener(chatClient);
@@ -98,7 +113,7 @@ public class ChatWindow extends JFrame {
         });
     }
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws IOException {
         ChatWindow chatWindow = new ChatWindow();
     }
 }

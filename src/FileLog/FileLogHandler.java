@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileLogHandler {
+public class FileLogHandler implements Serializable {
 
     private static User userInfo;
     private static String filename = "UserLog.txt";
@@ -23,66 +23,94 @@ public class FileLogHandler {
 
     public static void createFile(User user) throws IOException {
         Path filePath = Path.of(filename);
-        if(!Files.exists(filePath)) {
+        if (!Files.exists(filePath)) {
             Files.createFile(filePath);
         } else { //har noll koll hahaha jag ba varför tar inte den här metoden en fil nu då.
             //precis vad jag kom hit för att ändra så den inte gjorde hahahahaha
             //det här är SÅ roligt. Alltså min highlight idag hahaha jag tror vi är klara här just nu.
             //SÅ vad vill d göra nu här i? xd
-            writeToFile(userInfo);
+            //writeToFile(userInfo);
 
         }
     }
 
     public static void writeObjectToFile(User userInfo) {
-        try (FileOutputStream fileOut = new FileOutputStream("server/users.dat");
-             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+        try (FileOutputStream fileOut = new FileOutputStream("users.ser");
+             ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(String.valueOf(fileOut)))) {
             objectOut.writeObject(userInfo);
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void writeToFile(User userInfo) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
-            writer.write(logLine());
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public static List<User> readObjectFile(){
-        List<User> userInfo = new ArrayList<>();
-        try (FileInputStream fileIn = new FileInputStream("server/users.dat");
-             ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
-            while (true) {
-                try {
-                    Object readObject = objectIn.readObject();
-                    if (readObject instanceof User user) {
-                        userInfo.add(user);
-                    }
-                } catch (EOFException e) {
-                    break;
-                }
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return userInfo;
-    }
-
-   /* public static List<User> readLogFile() {
-        List<User> userInfo = new ArrayList<>();
-        try (
 
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void writeObjectToFile2(User userInfo) {
+        try (FileOutputStream fileOut = new FileOutputStream("src/users.ser");
+             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {  // Use fileOut directly here
+            objectOut.writeObject(userInfo);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //chatgpt sa att vår metod borde se ut såhär
+
+    /*public static void writeToFile(User user) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+            writer.write(logLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+   /* public static String logLine() {
+        return userInfo + (online ? "Offline " : " Online ");
+
+    }*/
+
+    /*
+    public static List<User> readObjectFile(){
+        List<User> userInfo = new ArrayList<>();
+        try (FileInputStream fileIn = new FileInputStream("server/users.ser");
+             ObjectInputStream objectIn = new ObjectInputStream((fileIn)) {
+            while(true)
+                 {
+                     try {
+                         Object readObject = objectIn.readObject();
+                         if (readObject instanceof User user) {
+                             userInfo.add(user);
+                         }
+                         break;
+                     } catch (IOException e) {
+                         throw new RuntimeException(e);
+                     } catch (ClassNotFoundException e) {
+                         throw new RuntimeException(e);
+                     }
+
+                 }
+             }
+
+             return userInfo;
+
+
+    }*/
+
+    public static List<User> readObjectFile() {
+        List<User> userInfo = new ArrayList<>();
+        try (FileInputStream fileIn = new FileInputStream("server/users.ser");
+             ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
+            while (objectIn.readObject() instanceof User user) {
+                userInfo.add(user);
+            }
+        } catch (EOFException e) { //ja för när vi öppnar chattfönstret //fastnar den på detta "error" alltså?
+            System.out.println("Hit end of File "); ///hit kommer vi för det här printas ut.
+            return userInfo;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         return userInfo;
-    }*/
-
-
-    public static String logLine(){
-        return userInfo + (online ?  "Offline " : " Online ");
     }
+
 }

@@ -28,33 +28,25 @@ public class ChatClient implements ActionListener{
     ChatWindow window;
 
 
-    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName, ChatWindow window) {
+    public ChatClient(JTextField textField, JTextArea textArea, Socket socket, String userName, ObjectOutputStream out, ObjectInputStream in, ChatWindow window) {
         this.window = window;
         this.textField = textField;
         this.textArea = textArea;
         this.socket = socket;
         this.username = userName;
         status = Status.OFFLINE;
+        this.out = out;
+        this.in = in;
 
-        userList = FileLogHandler.readObjectFile();
+       // userList = FileLogHandler.readObjectFile(); //så läser vi här, men vet ej om vi skriver nånsin vi kanske borde lägga till en kommentar
+        //om vi testar att kommentera bort den en gång bara så vi får själva writetofile att funka? // aa sure
+//vad tänkte du skriva? jag såg allt working on settings dialog hu
 
-
-        try{
-            startConnection();
-            startListeningForMessages();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        startListeningForMessages();
     }
 
     public void setUserName(String userName) {
         this.username = userName;
-    }
-
-    public void startConnection() throws IOException {
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
     }
 
     public void closeConnection() {

@@ -14,7 +14,7 @@ import java.util.List;
 public class ConnectRequestState implements RequestHandlingStates {
 
     ClientConnection connection;
-    //private FileLogHandler fileLogHandler;
+
 
     public ConnectRequestState(ClientConnection connection) {
         this.connection = connection;
@@ -27,22 +27,10 @@ public class ConnectRequestState implements RequestHandlingStates {
         connection.getServer().broadcast("Has joined: " + request.getUsername());
 
         connection.user = new User(request.getUsername(), Status.ONLINE);
-        connection.getServer().broadcastObjects(new Response(connection.getServer().getClients(), eResponseType.USER_STATE_CHANGED));
+        System.out.print("Try to write to file");
+        FileLogHandler.writeObjectToFile(connection.user);
 
-        /*
-        List<User> currentUserList = FileLogHandler.readLogFile();
-        boolean foundUser = false;
-        for(User user : currentUserList){
-            if(user.getUsername().equals(request.getUsername())){
-                foundUser = true;
-                connection.getServer().broadcastObjects(new Response(currentUser, eResponseType.USER_STATE_CHANGED));
-                break;
-            }
-        }
-        if (!foundUser) {
-            FileLogHandler.createFile((currentUser));
-        }
-         */
+        connection.getServer().broadcastObjects(new Response(connection.getServer().getClients(), eResponseType.USER_STATE_CHANGED));
 
     }
 

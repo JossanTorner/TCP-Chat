@@ -9,7 +9,7 @@ import client.User;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientConnection extends Thread {
+public class ClientConnection extends Thread implements Serializable {
 
     private Socket socket;
     private Server server;
@@ -42,7 +42,7 @@ public class ClientConnection extends Thread {
             while(in.readObject() instanceof Request request){
                 System.out.println("Taking requests of request-type");
                 switch (request.getRequestType()){
-                    case CONNECT -> {
+                    case CONNECT -> {//får du ut denna "connect request" till terminalen?
                         System.out.println("Connect request");
                         state = connectState;
                         state.handleRequest(request);
@@ -60,7 +60,7 @@ public class ClientConnection extends Thread {
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             server.removeClient(this);
         }

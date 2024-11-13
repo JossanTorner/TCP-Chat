@@ -18,8 +18,7 @@ public class MessageRequestState implements RequestHandlingStates{
     public void handleRequest(Request request) throws IOException {
         String message = request.getUsername() + " : " + request.getMessage();
         connection.getServer().broadcast(message);
-        connection.getOut().close();
-        connection.getIn().close();
+        
     }
 
 
