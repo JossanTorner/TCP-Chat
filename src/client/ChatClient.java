@@ -38,10 +38,19 @@ public class ChatClient implements ActionListener{
         this.out = out;
         this.in = in;
 
-       // userList = FileLogHandler.readObjectFile(); //så läser vi här, men vet ej om vi skriver nånsin vi kanske borde lägga till en kommentar
-        //om vi testar att kommentera bort den en gång bara så vi får själva writetofile att funka? // aa sure
-//vad tänkte du skriva? jag såg allt working on settings dialog hu
-
+        //Vi kan testa detta? //borde ha flera users i den eftersom vi loggat flera gånger, säkert massa linn as usual
+        //vi kör //HAHAHAH massa linked-linns hahaha //vet ej var null kom ifrån, så om vi testar att skriva ut sådär först för att se om de tär här
+        //ok så det verkar vara listtan
+        //får null som värde i terminal
+        try{
+            userList = FileLogHandler.readObjectFile();
+            for(User user:userList){
+                System.out.println("List contains:");
+                System.out.println(user.getUsername());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         startListeningForMessages();
     }
 

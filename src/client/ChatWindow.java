@@ -1,4 +1,6 @@
 package client;
+import server.Response;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -85,6 +87,11 @@ public class ChatWindow extends JFrame {
 
                 Request connectRequest = new Request(eRequest.CONNECT, username, "");
                 out.writeObject(connectRequest);
+                Object received = in.readObject();
+                if(received instanceof Response response){
+                    chatArea.append(response.getMessage());
+                }
+
 
                 chatClient = new ChatClient(messageField, chatArea, socket, username, out, in, this);
 
@@ -94,6 +101,8 @@ public class ChatWindow extends JFrame {
 
             } catch (IOException e1) {
                 e1.printStackTrace();
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }

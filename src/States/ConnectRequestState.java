@@ -9,9 +9,10 @@ import server.Response;
 import server.eResponseType;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
-public class ConnectRequestState implements RequestHandlingStates {
+public class ConnectRequestState implements RequestHandlingStates, Serializable {
 
     ClientConnection connection;
 
@@ -28,7 +29,7 @@ public class ConnectRequestState implements RequestHandlingStates {
 
         connection.user = new User(request.getUsername(), Status.ONLINE);
         System.out.print("Try to write to file");
-        FileLogHandler.writeObjectToFile(connection.user);
+        FileLogHandler.writeObjectToFile2(connection.user);
 
         connection.getServer().broadcastObjects(new Response(connection.getServer().getClients(), eResponseType.USER_STATE_CHANGED));
 

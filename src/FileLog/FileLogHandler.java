@@ -39,6 +39,7 @@ public class FileLogHandler implements Serializable {
              ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(String.valueOf(fileOut)))) {
             objectOut.writeObject(userInfo);
 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,7 +47,7 @@ public class FileLogHandler implements Serializable {
 
 
     public static void writeObjectToFile2(User userInfo) {
-        try (FileOutputStream fileOut = new FileOutputStream("src/users.ser");
+        try (FileOutputStream fileOut = new FileOutputStream("server/users.ser");
              ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {  // Use fileOut directly here
             objectOut.writeObject(userInfo);
         } catch (IOException e) {
@@ -102,12 +103,10 @@ public class FileLogHandler implements Serializable {
             while (objectIn.readObject() instanceof User user) {
                 userInfo.add(user);
             }
-        } catch (EOFException e) { //ja för när vi öppnar chattfönstret //fastnar den på detta "error" alltså?
-            System.out.println("Hit end of File "); ///hit kommer vi för det här printas ut.
+        } catch (EOFException e) {
+            System.out.println("Hit end of File ");
             return userInfo;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         return userInfo;
