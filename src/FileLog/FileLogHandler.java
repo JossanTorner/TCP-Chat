@@ -100,12 +100,18 @@ public class FileLogHandler implements Serializable {
         List<User> userInfo = new ArrayList<>();
         try (FileInputStream fileIn = new FileInputStream("server/users.ser");
              ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
-            while (objectIn.readObject() instanceof User user) {
-                userInfo.add(user);
+            while (true) {
+                try {
+                    Object obj = objectIn.readObject();
+                    if (obj instanceof User user) {
+                        userInfo.add(user);
+                    }
+                } catch (EOFException e) {
+                    // Reached end of file, break out of loop
+                    System.out.println("Hit end of file.");
+                    break;
+                }
             }
-        } catch (EOFException e) {
-            System.out.println("Hit end of File ");
-            return userInfo;
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

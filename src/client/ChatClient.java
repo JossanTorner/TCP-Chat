@@ -38,12 +38,9 @@ public class ChatClient implements ActionListener{
         this.out = out;
         this.in = in;
 
-        //Vi kan testa detta? //borde ha flera users i den eftersom vi loggat flera gånger, säkert massa linn as usual
-        //vi kör //HAHAHAH massa linked-linns hahaha //vet ej var null kom ifrån, så om vi testar att skriva ut sådär först för att se om de tär här
-        //ok så det verkar vara listtan
-        //får null som värde i terminal
+
         try{
-            userList = FileLogHandler.readObjectFile();
+            userList = new ArrayList<>(FileLogHandler.readObjectFile());
             for(User user:userList){
                 System.out.println("List contains:");
                 System.out.println(user.getUsername());

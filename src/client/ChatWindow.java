@@ -74,16 +74,14 @@ public class ChatWindow extends JFrame {
 
     public void setUpChat() throws IOException {
         connectButton.addActionListener(e -> {
-//så vad står det i servern nu?
-            //haha vi tappar mer och mer greppet om vår app.
-            //börjar förstå det här med att rita upp innan man börjar bygga HAAHA
-            //JA HAHA same
+
             try{
 
                 socket = new Socket(InetAddress.getLocalHost(), PORT);
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
+                //här sätter jag in username i requesten, men den är NULL.. eller kanske inte
 
                 Request connectRequest = new Request(eRequest.CONNECT, username, "");
                 out.writeObject(connectRequest);
